@@ -1,3 +1,4 @@
+import { Convo } from '@/types/convo.types';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { cache } from 'react';
 
@@ -38,4 +39,26 @@ export const getUserDetails = cache(async (supabase: SupabaseClient) => {
     .select('*')
     .single();
   return userDetails;
+});
+
+export const createConversation = cache(async (supabase: SupabaseClient, convo : Convo) => {
+  const { data, error } = await supabase
+    .from('conversation')
+    .insert([
+      {
+        id: convo.id,
+        userId: convo.userId,
+        content: convo.message,
+        createdAt: convo.createdAt,
+        title: convo.title,
+      }
+    ])
+    .select('*')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return { data, error };
 });

@@ -2,6 +2,7 @@
 import { User } from "@supabase/supabase-js";
 import { Navbar } from "../landing/Navbar";
 import { useState } from "react";
+import { createConversation } from "@/utils/supabase/queries";
 
 interface Message {
   type: 'user' | 'bot' | 'error';
@@ -60,6 +61,7 @@ export default function ChatPage({ user }: { user: User }) {
       }
       const data = await response.json();
       setMessages(prev => [...prev, { type: 'bot', content: data.reply }]);
+      
     } catch (error) {
       console.error('Error:', error);
       setMessages(prev => [...prev, { type: 'error', content: 'Failed to get response.' }]);
