@@ -6,6 +6,7 @@ export default function ChatPage({ user }: { user: User }) {
     <>
       <Navbar user={user} />
       <div>chat page</div>
+      <div>{JSON.stringify(user)}</div>
     </>
   )
 }
