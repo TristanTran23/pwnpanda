@@ -25,7 +25,7 @@ export default async function LandingPage() {
   return (
     <>
       <Navbar user={user} />
-      <Hero />
+      <Hero user={user}/>
       <Sponsors />
       <About />
       <HowItWorks />
