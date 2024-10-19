@@ -63,3 +63,17 @@ export const createConversation = cache(async (supabase: SupabaseClient, convo :
 
   return { data, error };
 });
+
+export const getConversation = cache(async (supabase: SupabaseClient, id: string) => {
+  const { data, error } = await supabase
+    .from('conversation')
+    .select('*')
+    .eq('userId', id)
+    .single();
+    
+  if (error) {
+    throw error;
+  }
+
+  return { data, error };
+});

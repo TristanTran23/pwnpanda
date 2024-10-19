@@ -11,19 +11,15 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SiGithub, SiGoogle } from '@icons-pack/react-simple-icons';
-import { createApiClient, insertNewUser, signInUserWithToken, updateUser } from '@/utils/supabase/api';
+import { createApiClient } from '@/utils/supabase/api';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '../ui/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthState, StateInfo } from '@/utils/types';
-import { userExistsById } from '@/utils/supabase/queries';
-import { Session, User } from '@supabase/supabase-js';
-import { supabase } from '@/utils/supabase';
 
 export function AuthForm({ state }: { state: AuthState }) {
-  const [ auth, setAuth ] = useState(false);   
   const { toast } = useToast();
   const api = createApiClient(createClient());
   const searchParams = useSearchParams();
@@ -42,11 +38,8 @@ export function AuthForm({ state }: { state: AuthState }) {
       onSubmit: async () => {
         setLoading(true);
         try {
-          const { user } = await api.passwordSignup({ email, password });
+          await api.passwordSignup({ email, password });
           await api.passwordSignin({ email, password });
-          if (user) {
-            await checkAndUpdateUser(user.user_metadata.session);
-          }
           router.refresh();
         } catch (e) {
           if (e instanceof Error) {
@@ -69,10 +62,7 @@ export function AuthForm({ state }: { state: AuthState }) {
       onSubmit: async () => {
         setLoading(true);
         try {
-          const { user } = await api.passwordSignin({ email, password });
-          if (user) {
-            await checkAndUpdateUser(user);
-          }
+          await api.passwordSignin({ email, password });
           router.refresh();
         } catch (e) {
           if (e instanceof Error) {
@@ -160,96 +150,6 @@ export function AuthForm({ state }: { state: AuthState }) {
       );
     }
   }, []);
-
-// Existing checkAndUpdateUser function (already using alerts)
-const checkAndUpdateUser = async (session: User | null) => {
-  if (!session) {
-    alert("No user found in session");
-    return;
-  }
-  
-  try {
-    alert(`Checking if user exists: ${session.id}`);
-    const { user, error } = await userExistsById(session.id);
-
-    if (error) {
-      alert(`Error checking user: ${error.message}`);
-      return;
-    }
-
-    if (!user) {
-      alert("User not found, inserting new user...");
-      const { data, error: insertError } = await insertNewUser(session);
-
-      if (insertError) {
-        alert(`Error adding user: ${insertError.message}`);
-        return;
-      }
-
-      alert(`Inserted new user: ${JSON.stringify(data)}`);
-    } else {
-      alert("User found, updating user...");
-      const { user: updatedUser, error: updateError } = await updateUser(session);
-
-      if (updateError) {
-        alert(`Error updating user: ${updateError.message}`);
-        return;
-      }
-
-      alert(`Updated user: ${JSON.stringify(updatedUser)}`);
-    }
-  } catch (error) {
-    alert(`Unexpected error in checkAndUpdateUser: ${JSON.stringify(error)}`);
-  }
-};
-
-// Modified handleGoogleSignIn function with alerts instead of console.log
-const handleGoogleSignIn = async () => {
-  alert("Starting Google Sign-In process"); // Added alert at the beginning
-  try {
-    const { data, error } = await api.oauthSignin('google');
-    if (error) {
-      alert(`Error during Google sign-in: ${error}`);
-      return;
-    }
-
-    alert("Google Sign-In successful, fetching user data"); // Added alert after successful sign-in
-
-    // Wait for the user data to be available
-    let userData;
-    let attempts = 0;
-    const maxAttempts = 5;
-    do {
-      attempts++;
-      const { data: userDataResult, error: userError } = await supabase.auth.getUser();
-      if (userError) {
-        alert(`Error fetching user data: ${userError.message}`);
-        return;
-      }
-      userData = userDataResult;
-      if (!userData || !userData.user) {
-        alert(`Attempt ${attempts}: User data not available yet`);
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second before retrying
-      }
-    } while ((!userData || !userData.user) && attempts < maxAttempts);
-
-    if (!userData || !userData.user) {
-      alert("Failed to fetch user data after multiple attempts");
-      return;
-    }
-
-    alert(`User data fetched successfully: ${JSON.stringify(userData.user)}`); // Added alert after fetching user data
-
-    // Now that we have the user data, call checkAndUpdateUser
-    await checkAndUpdateUser(userData.user);
-
-    // Refresh the page or update the UI as needed
-    alert("Sign-in process completed, refreshing page");
-    router.refresh();
-  } catch (error) {
-    alert(`Unexpected error in handleGoogleSignIn: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
-  }
-};
 
   const currState = stateInfo[authState];
   return (
@@ -359,7 +259,7 @@ const handleGoogleSignIn = async () => {
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => handleGoogleSignIn()}
+                onClick={() => api.oauthSignin('google')}
               >
                 <SiGoogle className="h-4 w-4 mr-2" /> Google
               </Button>
