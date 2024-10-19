@@ -55,9 +55,9 @@ export default async function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en">
       <ThemeProvider>
-        <PHProvider>
+        {/* <PHProvider> */}
           <body>
-            <PostHogPageView />
+            {/* <PostHogPageView /> */}
             <main
               id="skip"
               className="min-h-[calc(100dvh-4rem)] md:min-h[calc(100dvh-5rem)]"
@@ -66,7 +66,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
             </main>
             <Toaster />
           </body>
-        </PHProvider>
+        {/* </PHProvider> */}
       </ThemeProvider>
     </html>
   );

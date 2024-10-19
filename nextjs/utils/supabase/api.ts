@@ -9,7 +9,6 @@ import {
 import { getURL } from '@/utils/helpers';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../supabase';
-import { userExistsById } from './queries';
 
 export const createApiClient = (supabase: SupabaseClient<Database>) => {
   const passwordSignup = async (creds: SignUpWithPasswordCredentials) => {

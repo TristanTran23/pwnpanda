@@ -18,7 +18,6 @@ export const getSubscription = cache(async (supabase: SupabaseClient) => {
     .order('created', { ascending: false })
     .limit(1)
     .maybeSingle();
-
   return subscription;
 });
 
@@ -30,7 +29,6 @@ export const getProducts = cache(async (supabase: SupabaseClient) => {
     .eq('prices.active', true)
     .order('metadata->index')
     .order('unit_amount', { referencedTable: 'prices' });
-
   return products;
 });
 
@@ -42,24 +40,51 @@ export const getUserDetails = cache(async (supabase: SupabaseClient) => {
   return userDetails;
 });
 
-export const createConversation = cache(async (supabase: SupabaseClient, convo : Convo) => {
+export const createConversation = cache(async (supabase: SupabaseClient, convo: Omit<Convo, 'id'>) => {
   const { data, error } = await supabase
     .from('conversation')
     .insert([
       {
-        // id: convo.id,
         userId: convo.userId,
-        content: convo.message,
-        createdAt: convo.createdAt,
-        title: convo.title,
+        content: convo.content,
+        title: convo.title || "Untitled",
       }
     ])
     .select('*')
     .single();
-
   if (error) {
+    console.error("Error creating conversation:", error);
+    throw error;
+  }
+  return { data, error };
+});
+
+export const getConversations = cache(async (supabase: SupabaseClient, userId: string) => {
+  const { data, error } = await supabase
+    .from('conversation')
+    .select('*')
+    .eq('userId', userId)
+    // .order('createdAt', { ascending: false });
+    
+  if (error) {
+    console.error("Error fetching conversations:", error);
     throw error;
   }
 
+  return { data, error };
+});
+
+export const updateConversation = cache(async (supabase: SupabaseClient, conversationId: string, newContent: string) => {
+  const { data, error } = await supabase
+    .from('conversation')
+    .update({ content: newContent })
+    .eq('id', conversationId)
+    .select('*')
+    .single();
+
+  if (error) {
+    console.error("Error updating conversation:", error);
+    throw error;
+  }
   return { data, error };
 });
