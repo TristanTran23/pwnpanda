@@ -3,6 +3,9 @@ import { redirect } from 'next/navigation';
 import { Navbar } from '@/components/landing/Navbar';
 import { AuthForm } from '@/components/misc/AuthForm';
 import { AuthState } from '@/utils/types';
+import { Session } from '@supabase/supabase-js';
+import { userExistsById } from '@/utils/supabase/queries';
+import { insertNewUser } from '@/utils/supabase/api';
 
 export default async function SignIn({
   params

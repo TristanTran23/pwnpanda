@@ -1,6 +1,7 @@
 import { Convo } from '@/types/convo.types';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { cache } from 'react';
+import { supabase } from '../supabase';
 
 export const getUser = cache(async (supabase: SupabaseClient) => {
   const {
