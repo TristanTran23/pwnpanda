@@ -11,13 +11,15 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { SiGithub, SiGoogle } from '@icons-pack/react-simple-icons';
-import { createApiClient } from '@/utils/supabase/api';
+import { createApiClient, insertNewUser, signInUserWithToken, updateUser } from '@/utils/supabase/api';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '../ui/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthState, StateInfo } from '@/utils/types';
+import { userExistsById } from '@/utils/supabase/queries';
+import { Session, User } from '@supabase/supabase-js';
 
 export function AuthForm({ state }: { state: AuthState }) {
   const { toast } = useToast();
@@ -38,8 +40,11 @@ export function AuthForm({ state }: { state: AuthState }) {
       onSubmit: async () => {
         setLoading(true);
         try {
-          await api.passwordSignup({ email, password });
+          const { user } = await api.passwordSignup({ email, password });
           await api.passwordSignin({ email, password });
+          if (user) {
+            await checkAndUpdateUser(user.user_metadata.session);
+          }
           router.refresh();
         } catch (e) {
           if (e instanceof Error) {
@@ -62,7 +67,10 @@ export function AuthForm({ state }: { state: AuthState }) {
       onSubmit: async () => {
         setLoading(true);
         try {
-          await api.passwordSignin({ email, password });
+          const { user } = await api.passwordSignin({ email, password });
+          if (user) {
+            await checkAndUpdateUser(user);
+          }
           router.refresh();
         } catch (e) {
           if (e instanceof Error) {
@@ -150,6 +158,47 @@ export function AuthForm({ state }: { state: AuthState }) {
       );
     }
   }, []);
+
+  const checkAndUpdateUser = async (session: User | null) => {
+    if (!session) {
+      // alert("No user found in session");
+      return;
+    }
+    
+    try {
+      // alert(`Checking if user exists: ${session.id}`);
+      const { user, error } = await userExistsById(session.id);
+  
+      if (error) {
+        // alert(`Error checking user: ${error.message}`);
+        return;
+      }
+  
+      if (!user) {
+        // alert("User not found, inserting new user...");
+        const { data, error: insertError } = await insertNewUser(session);
+  
+        if (insertError) {
+          // alert(`Error adding user: ${insertError.message}`);
+          return;
+        }
+  
+        // alert(`Inserted new user: ${JSON.stringify(data)}`);
+      } else {
+        // alert("User found, updating user...");
+        const { user: updatedUser, error: updateError } = await updateUser(session);
+  
+        if (updateError) {
+          // alert(`Error updating user: ${updateError.message}`);
+          return;
+        }
+  
+        // alert(`Updated user: ${JSON.stringify(updatedUser)}`);
+      }
+    } catch (error) {
+      // alert(`Unexpected error in checkAndUpdateUser: ${JSON.stringify(error)}`);
+    }
+  };
 
   const currState = stateInfo[authState];
   return (

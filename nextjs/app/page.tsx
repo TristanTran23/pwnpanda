@@ -13,7 +13,8 @@ import { Services } from '@/components/landing/Services';
 import { Sponsors } from '@/components/landing/Sponsors';
 import { Team } from '@/components/landing/Team';
 import { Testimonials } from '@/components/landing/Testimonials';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/utils/supabase/server';4
+import { GoogleOAuthProvider } from "@react-oauth/google"
 
 export default async function LandingPage() {
   const supabase = createClient();
@@ -24,21 +25,23 @@ export default async function LandingPage() {
 
   return (
     <>
-      <Navbar user={user} />
-      <Hero />
-      <Sponsors />
-      <About />
-      <HowItWorks />
-      <Features />
-      <Services />
-      <Cta />
-      <Testimonials />
-      <Team />
-      <Pricing user={user} />
-      <Newsletter />
-      <FAQ />
-      <Footer />
-      <ScrollToTop />
+      <GoogleOAuthProvider clientId='752130935159-gdrugak3jlpsujl2cqhiu13n3frd6t0u.apps.googleusercontent.com'>
+        <Navbar user={user} />
+        <Hero />
+        <Sponsors />
+        <About />
+        <HowItWorks />
+        <Features />
+        <Services />
+        <Cta />
+        <Testimonials />
+        <Team />
+        <Pricing user={user} />
+        <Newsletter />
+        <FAQ />
+        <Footer />
+        <ScrollToTop />
+      </GoogleOAuthProvider>
     </>
   );
 }

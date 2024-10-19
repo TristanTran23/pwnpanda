@@ -1,5 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { cache } from 'react';
+import { supabase } from '../supabase';
 
 export const getUser = cache(async (supabase: SupabaseClient) => {
   const {
@@ -39,3 +40,12 @@ export const getUserDetails = cache(async (supabase: SupabaseClient) => {
     .single();
   return userDetails;
 });
+
+export const userExistsById = async (userId: string) => {
+  const { data: users, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', userId);
+  const user = users?.length ? users[0] : null;
+  return { user, error };
+};
