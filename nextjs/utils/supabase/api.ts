@@ -47,7 +47,7 @@ export const createApiClient = (supabase: SupabaseClient<Database>) => {
       }
     });
     if (res.error) throw res.error;
-    return res.data;
+    return res;
   };
 
   const signOut = async () => {
