@@ -1,5 +1,7 @@
 //nextjs/components/misc/SecurityAdvisor.tsx
 
+"use client";
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,7 +16,7 @@ export default function SecurityAdvisor() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/security-advice', {
+      const res = await fetch('../api/security_advice', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -22,14 +24,18 @@ export default function SecurityAdvisor() {
         body: JSON.stringify({ prompt }),
       });
 
+      if (!res.ok) {
+        throw new Error('Failed to fetch security advice');
+      }
+
       const data = await res.json();
       setResponse(data.result);
     } catch (error) {
       console.error('Error:', error);
       setResponse('An error occurred while processing your request.');
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
