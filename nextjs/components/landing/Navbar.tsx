@@ -37,7 +37,7 @@ const routeList: RouteProps[] = [
   },
 ];
 
-export const Navbar = ({ user, supabase }: { user: User | null, supabase: SupabaseClient }) => {
+export const Navbar = ({ user }: { user: User | null }) => {
   const router = useRouter();
   const { toast } = useToast();
   const api = createApiClient(createClient());

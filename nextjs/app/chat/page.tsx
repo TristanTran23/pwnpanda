@@ -13,5 +13,5 @@ export default async function Chat() {
     return redirect('/auth/signin');
   }
 
-  return <ChatPage user={user} supabase={supabase}/>;
+  return <ChatPage user={user} />;
 }

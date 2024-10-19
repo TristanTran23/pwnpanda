@@ -9,7 +9,7 @@ import { SupabaseClient, User } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export const Hero = ({ user, supabase }: { user: User | null, supabase: SupabaseClient }) => {
+export const Hero = ({ user }: { user: User | null }) => {
   const router = useRouter();
 
   const handleClick = () => {

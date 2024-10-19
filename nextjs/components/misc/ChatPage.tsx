@@ -8,7 +8,7 @@ interface Message {
   content: string;
 }
 
-export default function ChatPage({ user, supabase }: { user: User, supabase: SupabaseClient }) {
+export default function ChatPage({ user }: { user: User }) {
   const [input, setInput] = useState('');
   const [emailInput, setEmailInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -71,7 +71,7 @@ export default function ChatPage({ user, supabase }: { user: User, supabase: Sup
 
   return (
     <>
-      <Navbar user={user} supabase={supabase}/>
+      <Navbar user={user} />
       <div className="max-w-2xl mx-auto p-4">
         {!isEmailChecked ? (
           <form onSubmit={handleEmailSubmit} className="flex mb-4">
