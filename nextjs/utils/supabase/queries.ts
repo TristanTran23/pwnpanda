@@ -47,7 +47,7 @@ export const createConversation = cache(async (supabase: SupabaseClient, convo :
     .from('conversation')
     .insert([
       {
-        id: convo.id,
+        // id: convo.id,
         userId: convo.userId,
         content: convo.message,
         createdAt: convo.createdAt,
