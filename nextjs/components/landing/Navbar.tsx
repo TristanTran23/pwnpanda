@@ -23,6 +23,7 @@ import { createApiClient } from '@/utils/supabase/api';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
+import Image from 'next/image'
 
 interface RouteProps {
   href: string;
@@ -31,21 +32,9 @@ interface RouteProps {
 
 const routeList: RouteProps[] = [
   {
-    href: '/#features',
-    label: 'Features'
+    href: '/chat',
+    label: 'Chat'
   },
-  {
-    href: '/#testimonials',
-    label: 'Testimonials'
-  },
-  {
-    href: '/#pricing',
-    label: 'Pricing'
-  },
-  {
-    href: '/#faq',
-    label: 'FAQ'
-  }
 ];
 
 export const Navbar = ({ user }: { user: User | null }) => {
@@ -59,18 +48,30 @@ export const Navbar = ({ user }: { user: User | null }) => {
     }
     return router.push('/auth');
   };
+  const handleChatButtonClick = () => {
+    if (user) {
+      return router.push('/chat');
+    }
+    return router.push('/auth');
+  };
   return (
     <header className="sticky border-b-[1px] top-0 z-40 w-full bg-white dark:border-b-slate-700 dark:bg-background">
       <NavigationMenu className="mx-auto">
-        <NavigationMenuList className="container h-14 px-4 w-screen flex justify-between ">
+        <NavigationMenuList className="container h-16 px-4 w-screen flex justify-between ">
           <NavigationMenuItem className="font-bold flex">
             <a
               rel="noreferrer noopener"
               href="/"
-              className="ml-2 font-bold text-xl flex"
+              className="ml-2 font-bold text-xl flex items-center"
             >
-              <LogoIcon />
-              ShadcnUI/React
+              {/* <LogoIcon /> */}
+              <Image
+                src="/logo.png"
+                alt="PwnPanda Logo"
+                width={60}
+                height={60}
+              />
+              PwnPanda
             </a>
           </NavigationMenuItem>
 

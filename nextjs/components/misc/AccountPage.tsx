@@ -104,28 +104,13 @@ export default function AccountPage({
                 </form>
               </CardContent>
             </Card>
-            <Card x-chunk="dashboard-04-chunk-2">
-              <CardHeader>
-                <CardTitle>Your Plan</CardTitle>
-                <CardDescription>
-                  {subscription
-                    ? `You are currently on the ${subscription?.prices?.products?.name} plan.`
-                    : 'You are not currently subscribed to any plan.'}
-                </CardDescription>
-              </CardHeader>
-              <CardFooter className="border-t px-6 py-4 flex space-between">
-                <Button onClick={handleBillingPortal} disabled={loading}>
-                  Manage subscription
-                </Button>
-              </CardFooter>
-            </Card>
             <Card x-chunk="dashboard-04-chunk-3">
               <CardHeader>
                 <CardTitle>Sign out</CardTitle>
                 <CardDescription>Sign out of your account</CardDescription>
               </CardHeader>
               <CardFooter className="border-t px-6 py-4">
-                <Button onClick={handleSignOut} disabled={loading}>
+                <Button className="bg-[#1EA92F] hover:bg-[#2c9639]" onClick={handleSignOut} disabled={loading}>
                   Sign out
                 </Button>
               </CardFooter>
