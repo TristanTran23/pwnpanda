@@ -1,5 +1,5 @@
 'use client';
-import { User } from "@supabase/supabase-js";
+import { SupabaseClient, User } from "@supabase/supabase-js";
 import { Navbar } from "../landing/Navbar";
 import { useState } from "react";
 
@@ -8,7 +8,7 @@ interface Message {
   content: string;
 }
 
-export default function ChatPage({ user }: { user: User }) {
+export default function ChatPage({ user, supabase }: { user: User, supabase: SupabaseClient }) {
   const [input, setInput] = useState('');
   const [emailInput, setEmailInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -71,7 +71,7 @@ export default function ChatPage({ user }: { user: User }) {
 
   return (
     <>
-      <Navbar user={user} />
+      <Navbar user={user} supabase={supabase}/>
       <div className="max-w-2xl mx-auto p-4">
         {!isEmailChecked ? (
           <form onSubmit={handleEmailSubmit} className="flex mb-4">

@@ -5,11 +5,11 @@ import { buttonVariants } from '@/components/ui/button';
 import { HeroCards } from './HeroCards';
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
-import { User } from '@supabase/supabase-js';
+import { SupabaseClient, User } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export const Hero = ({ user }: { user: User | null }) => {
+export const Hero = ({ user, supabase }: { user: User | null, supabase: SupabaseClient }) => {
   const router = useRouter();
 
   const handleClick = () => {

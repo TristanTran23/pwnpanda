@@ -18,7 +18,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
 import { ModeToggle } from './mode-toggle';
 import { LogoIcon } from './Icons';
-import { User } from '@supabase/supabase-js';
+import { SupabaseClient, User } from '@supabase/supabase-js';
 import { createApiClient } from '@/utils/supabase/api';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
@@ -37,7 +37,7 @@ const routeList: RouteProps[] = [
   },
 ];
 
-export const Navbar = ({ user }: { user: User | null }) => {
+export const Navbar = ({ user, supabase }: { user: User | null, supabase: SupabaseClient }) => {
   const router = useRouter();
   const { toast } = useToast();
   const api = createApiClient(createClient());

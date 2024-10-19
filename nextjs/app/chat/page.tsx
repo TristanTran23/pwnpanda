@@ -3,7 +3,7 @@ import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { getUser } from '@/utils/supabase/queries';
 
-export default async function Account() {
+export default async function Chat() {
   const supabase = createClient();
   const [user] = await Promise.all([
     getUser(supabase),
@@ -13,5 +13,5 @@ export default async function Account() {
     return redirect('/auth/signin');
   }
 
-  return <ChatPage user={user} />;
+  return <ChatPage user={user} supabase={supabase}/>;
 }
