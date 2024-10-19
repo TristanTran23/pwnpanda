@@ -9,14 +9,17 @@ import { Input } from "@/components/ui/input"
 export default function SecurityAdvisor() {
   const [prompt, setPrompt] = useState('');
   const [response, setResponse] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
+    setResponse('');
 
     try {
-      const res = await fetch('../api/security_advice', {
+      const res = await fetch('/api/security_advice', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -24,15 +27,16 @@ export default function SecurityAdvisor() {
         body: JSON.stringify({ prompt }),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        throw new Error('Failed to fetch security advice');
+        throw new Error(data.error || 'Failed to fetch security advice');
       }
 
-      const data = await res.json();
       setResponse(data.result);
     } catch (error) {
       console.error('Error:', error);
-      setResponse('An error occurred while processing your request.');
+      setError(error instanceof Error ? error.message : 'An unknown error occurred');
     } finally {
       setLoading(false);
     }
@@ -52,6 +56,12 @@ export default function SecurityAdvisor() {
           {loading ? 'Processing...' : 'Get Advice'}
         </Button>
       </form>
+      {error && (
+        <div className="mt-4 p-4 bg-red-100 text-red-700 rounded-md">
+          <h3 className="font-bold mb-2">Error:</h3>
+          <p>{error}</p>
+        </div>
+      )}
       {response && (
         <div className="mt-4 p-4 bg-gray-100 rounded-md">
           <h3 className="font-bold mb-2">Security Advice:</h3>

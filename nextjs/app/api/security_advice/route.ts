@@ -2,26 +2,7 @@
 
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-async function getSecurityAdvice(prompt: string): Promise<string> {
-  try {
-    const response = await openai.completions.create({
-      model: "text-davinci-003",
-      prompt: `Provide online security advice for the following question: ${prompt}`,
-      max_tokens: 150,
-    });
-
-    return response.choices[0].text.trim();
-  } catch (error) {
-    console.error('OpenAI API error:', error);
-    throw new Error('Failed to get security advice');
-  }
-}
+import { getSecurityAdvice } from '../../../utils/openai/api';
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,7 +20,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error in security advice route:', error);
     return NextResponse.json(
-      { error: 'An error occurred while processing your request' },
+      { error: error instanceof Error ? error.message : 'An unknown error occurred' },
       { status: 500 }
     );
   }

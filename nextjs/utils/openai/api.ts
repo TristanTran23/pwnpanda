@@ -8,15 +8,23 @@ const openai = new OpenAI({
 
 export async function getSecurityAdvice(prompt: string): Promise<string> {
   try {
-    const response = await openai.completions.create({
-      model: "text-davinci-003", 
-      prompt: `Provide online security advice for the following question: ${prompt}`,
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {role: "system", content: "You are a helpful assistant that provides online security advice."},
+        {role: "user", content: prompt}
+      ],
       max_tokens: 150,
-    }); 
-    console.log(response);
-    return response.choices[0].text.trim();
+    });
+
+    const message = response.choices[0]?.message?.content;
+    if (!message) {
+      throw new Error('No response generated from OpenAI');
+    }
+
+    return message.trim();
   } catch (error) {
     console.error('OpenAI API error:', error);
-    throw new Error('Failed to get security advice');
+    throw error instanceof Error ? error : new Error('An unknown error occurred');
   }
 }
