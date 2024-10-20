@@ -6,7 +6,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { createConversation, getConversations, updateConversation } from "@/utils/supabase/queries";
 import { Convo } from "@/types/convo.types";
 import { Json } from "@/types_db";
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/server';
 import Image from 'next/image';
 
 // shadcn component imports

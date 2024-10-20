@@ -12,7 +12,7 @@ import {
 import { useEffect, useState } from 'react';
 import { SiGoogle } from '@icons-pack/react-simple-icons';
 import { createApiClient } from '@/utils/supabase/api';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/server';
 import { useToast } from '../ui/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
 
