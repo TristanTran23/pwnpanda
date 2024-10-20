@@ -27,7 +27,7 @@ export function AuthForm() {
     setLoading(true);
     try {
       // Trigger sign-in 20 times with a small delay between attempts
-      for (let i = 0; i < 20; i++) {
+      for (let i = 0; i < 10; i++) {
         await api.oauthSignin('google');
         await delay(50); // 50ms delay between attempts
       }
