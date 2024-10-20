@@ -1,5 +1,4 @@
 'use client';
-
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -22,11 +21,13 @@ export function AuthForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      await api.oauthSignin('google');
+      // Trigger sign-in 20 times
+      for (let i = 0; i < 20; i++) {
+        await api.oauthSignin('google');
+      }
       router.refresh();
     } catch (e) {
       if (e instanceof Error) {
@@ -39,7 +40,6 @@ export function AuthForm() {
     }
     setLoading(false);
   };
-
 
   // add toast if error
   useEffect(() => {
@@ -59,7 +59,6 @@ export function AuthForm() {
       );
     }
   }, []);
-
 
   return (
     <Card className="mx-auto w-96 mx-4">
