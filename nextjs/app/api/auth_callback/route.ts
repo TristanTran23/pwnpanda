@@ -1,7 +1,6 @@
 import { getURL } from '@/utils/helpers';
 import { createClient } from '@/utils/supabase/server';
 import { routeModule } from 'next/dist/build/templates/app-page';
-import { useRouter } from 'next/navigation';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 
@@ -11,7 +10,6 @@ export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
   const errorMessage = requestUrl.searchParams.get('error_description');
-  const router = useRouter();
 
   try {
     if (code) {
