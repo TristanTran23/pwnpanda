@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import OpenAI from 'openai';
 import fetch from 'node-fetch';
 
@@ -27,60 +27,83 @@ async function checkHaveIBeenPwned(email: string) {
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
-    const { message, email, isFirstMessage, conversationHistory } = body;
+  const body = await req.json();
+  const { message, email, isFirstMessage, conversationHistory } = body;
 
-    let messages = [];
+  let messages = [];
 
-    if (isFirstMessage) {
-      if (!email) {
-        return NextResponse.json({ error: 'Email is required for the first message' }, { status: 400 });
-      }
-      const hibpResult = await checkHaveIBeenPwned(email);
-      
-      messages = [
-        {role: "system", content: "You are a helpful assistant that provides online security advice. You have just received information about an email address from the HaveIBeenPwned API. Provide a helpful interpretation of this information and offer advice on what steps the user should take next."},
-        {role: "user", content: `Here's the result of the HaveIBeenPwned check: ${hibpResult}`}
-      ];
-    } else {
-      if (!message) {
-        return NextResponse.json({ error: 'No message provided' }, { status: 400 });
-      }
-      
-      messages = [
-        {role: "system", content: "You are a helpful assistant that provides online security advice."},
-        ...(Array.isArray(conversationHistory) ? conversationHistory : []),
-        {role: "user", content: message}
-      ];
+  if (isFirstMessage) {
+    if (!email) {
+      return new Response(JSON.stringify({ error: 'Email is required for the first message' }), { 
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
+    const hibpResult = await checkHaveIBeenPwned(email);
+    
+    messages = [
+      {role: "system", content: "You are a helpful assistant that provides online security advice. You have just received information about an email address from the HaveIBeenPwned API. Provide a helpful interpretation of this information and offer advice on what steps the user should take next."},
+      {role: "user", content: `Here's the result of the HaveIBeenPwned check: ${hibpResult}`}
+    ];
+  } else {
+    if (!message) {
+      return new Response(JSON.stringify({ error: 'No message provided' }), { 
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    messages = [
+      {role: "system", content: "You are a helpful assistant that provides online security advice."},
+      ...(Array.isArray(conversationHistory) ? conversationHistory : []),
+      {role: "user", content: message}
+    ];
+  }
 
-    // Ensure all messages have the required 'role' field
-    messages = messages.map(msg => {
-      if (!msg.role) {
-        console.warn('Message without role detected:', msg);
-        return { ...msg, role: 'user' }; // Default to 'user' if role is missing
-      }
-      return msg;
-    });
+  // Ensure all messages have the required 'role' field
+  messages = messages.map(msg => {
+    if (!msg.role) {
+      console.warn('Message without role detected:', msg);
+      return { ...msg, role: 'user' }; // Default to 'user' if role is missing
+    }
+    return msg;
+  });
 
-    console.log('Messages being sent to OpenAI:', JSON.stringify(messages, null, 2));
+  console.log('Messages being sent to OpenAI:', JSON.stringify(messages, null, 2));
 
-    const response = await openai.chat.completions.create({
+  try {
+    const stream = await openai.chat.completions.create({
       model: "gpt-4",
       messages: messages,
       max_tokens: 250,
+      stream: true,
     });
 
-    const aiMessage = response.choices[0]?.message?.content;
-    if (!aiMessage) {
-      throw new Error('No response generated from OpenAI');
-    }
-
-    const reply = aiMessage.trim();
-    return NextResponse.json({ reply });
+    return new Response(
+      new ReadableStream({
+        async start(controller) {
+          for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content || '';
+            if (content) {
+              controller.enqueue(JSON.stringify({ content }) + '\n');
+            }
+          }
+          controller.close();
+        },
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Transfer-Encoding': 'chunked',
+          'Cache-Control': 'no-cache',
+        },
+      }
+    );
   } catch (error) {
     console.error('API error:', error);
-    return NextResponse.json({ error: 'An error occurred while processing your request' }, { status: 500 });
+    return new Response(JSON.stringify({ error: 'An error occurred while processing your request' }), { 
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }
