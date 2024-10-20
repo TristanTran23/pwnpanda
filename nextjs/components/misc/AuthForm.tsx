@@ -20,6 +20,7 @@ export function AuthForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
 
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -41,9 +42,15 @@ export function AuthForm() {
         });
       }
     }
-    
+    setAuthenticated(true);
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (authenticated) {
+      router.refresh();
+    }
+  }, [authenticated, router]);
 
   // add toast if error
   useEffect(() => {
