@@ -20,7 +20,7 @@ async function checkHaveIBeenPwned(email: string) {
   if (response.status === 404) {
     return "Good news! This email hasn't been found in any known data breaches.";
   } else if (response.ok) {
-    const breaches = await response.json();
+    const breaches = await response.json() as any;
     return `This email was found in ${breaches.length} data breach(es). Here are the details: ${JSON.stringify(breaches)}`;
   } else {
     throw new Error('Failed to check HaveIBeenPwned');

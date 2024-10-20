@@ -9,7 +9,7 @@ import { Json } from "@/types_db";
 import { createClient } from '@/utils/supabase/client';
 
 interface Message {
-  type: 'user' | 'bot' | 'error';
+  role: 'user' | 'bot' | 'error';
   content: string;
 }
 
@@ -84,7 +84,7 @@ export default function ChatPage({ user }: { user: User }) {
         throw new Error('Failed to get response');
       }
       const data = await response.json();
-      const newMessages: Message[] = [{ type: 'bot', content: data.reply }];
+      const newMessages: Message[] = [{ role: 'bot', content: data.reply }];
       const newConversation: Omit<Convo, 'id'> = {
         userId: user.id,
         content: JSON.stringify(newMessages),
@@ -104,7 +104,7 @@ export default function ChatPage({ user }: { user: User }) {
       setCurrentConversation({
         id: 'error',
         title: 'Error',
-        content: [{ type: 'error', content: 'Failed to check email security.' }],
+        content: [{ role: 'error', content: 'Failed to check email security.' }],
       });
     } finally {
       setIsLoading(false);
@@ -116,7 +116,7 @@ export default function ChatPage({ user }: { user: User }) {
     e.preventDefault();
     if (!input.trim() || !currentConversation) return;
     setIsLoading(true);
-    const updatedMessages: Message[] = [...currentConversation.content, { type: 'user', content: input }];
+    const updatedMessages: Message[] = [...currentConversation.content, { role: 'user', content: input }];
     setCurrentConversation(prev => prev ? {...prev, messages: updatedMessages} : null);
     try {
       const response = await fetch('/api/chat', {
@@ -130,12 +130,12 @@ export default function ChatPage({ user }: { user: User }) {
         throw new Error('Failed to get response');
       }
       const data = await response.json();
-      updatedMessages.push({ type: 'bot', content: data.reply });
+      updatedMessages.push({ role: 'bot', content: data.reply });
       setCurrentConversation(prev => prev ? {...prev, messages: updatedMessages} : null);
       await updateConversation(supabase, currentConversation.id, JSON.stringify(updatedMessages));
     } catch (error) {
       console.error('Error:', error);
-      updatedMessages.push({ type: 'error', content: 'Failed to get response.' });
+      updatedMessages.push({ role: 'error', content: 'Failed to get response.' });
       setCurrentConversation(prev => prev ? {...prev, messages: updatedMessages} : null);
     } finally {
       setIsLoading(false);
@@ -189,10 +189,10 @@ export default function ChatPage({ user }: { user: User }) {
             <>
               <div className="bg-gray-100 p-4 rounded-lg mb-4 h-96 overflow-y-auto">
                 {currentConversation.content.map((message, index) => (
-                  <div key={index} className={`mb-2 ${message.type === 'user' ? 'text-right' : ''}`}>
+                  <div key={index} className={`mb-2 ${message.role === 'user' ? 'text-right' : ''}`}>
                     <span className={`inline-block p-2 rounded-lg ${
-                      message.type === 'user' ? 'bg-blue-500 text-white' : 
-                      message.type === 'bot' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                      message.role === 'user' ? 'bg-blue-500 text-white' : 
+                      message.role === 'bot' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
                     }`}>
                       {message.content}
                     </span>
