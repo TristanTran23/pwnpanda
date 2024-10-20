@@ -7,13 +7,14 @@ import { createConversation, getConversations, updateConversation } from "@/util
 import { Convo } from "@/types/convo.types";
 import { Json } from "@/types_db";
 import { createClient } from '@/utils/supabase/client';
+import Image from 'next/image';
 
 // shadcn component imports
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, User as UserIcon } from "lucide-react";
 
 interface Message {
   role: 'user' | 'assistant' | 'system';
@@ -103,6 +104,7 @@ export default function ChatPage({ user }: { user: User }) {
       }
       const data = await response.json();
       const newMessages: Message[] = [
+        { role: 'system', content: `Email checked: ${emailInput}` },
         { role: 'assistant', content: data.reply }
       ];
       const newConversation: Omit<Convo, 'id'> = {
@@ -243,13 +245,23 @@ export default function ChatPage({ user }: { user: User }) {
                 <CardContent className="flex-grow overflow-y-auto p-2">
                   <ScrollArea className="h-[calc(100vh-160px)] w-full pr-2">
                     {currentConversation.messages.map((message, index) => (
-                      <div key={index} className={`mb-2 ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
+                      <div key={index} className={`mb-4 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        {message.role !== 'user' && (
+                          <div className="w-8 h-8 rounded-full overflow-hidden mr-2 flex-shrink-0">
+                            <Image src="/logo.png" alt="Assistant" width={32} height={32} />
+                          </div>
+                        )}
                         <div className={`inline-block p-2 rounded-lg max-w-[85%] break-words text-sm ${
                           message.role === 'user' ? 'bg-blue-500 text-white' : 
                           message.role === 'assistant' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
                         }`}>
                           {message.content}
                         </div>
+                        {message.role === 'user' && (
+                          <div className="w-8 h-8 rounded-full overflow-hidden ml-2 flex-shrink-0 bg-gray-300 flex items-center justify-center">
+                            <UserIcon size={24} />
+                          </div>
+                        )}
                       </div>
                     ))}
                     <div ref={chatEndRef} />
