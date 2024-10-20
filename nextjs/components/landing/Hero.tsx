@@ -51,7 +51,7 @@ export const Hero = ({ user }: { user: User | null }) => {
           </p>
           <div className="space-y-4 md:space-y-0 md:space-x-4">
             <Button className="w-full md:w-1/3 bg-[#1EA92F] hover:bg-[#2c9639]" onClick={handleClick}>
-              Get Started
+              Login 
             </Button>
             <Button className="w-full md:w-1/3" onClick={handleClick}>
               Chat
