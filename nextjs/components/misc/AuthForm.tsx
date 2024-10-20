@@ -40,8 +40,9 @@ export function AuthForm() {
         });
       }
     }
-
-    router.refresh();
+    
+    await delay(100);
+    await router.refresh();
     setLoading(false);
   };
 
