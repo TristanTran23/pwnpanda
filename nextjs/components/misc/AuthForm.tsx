@@ -14,6 +14,7 @@ import { createClient } from '@/utils/supabase/client';
 import { useToast } from '../ui/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+
 export function AuthForm() {
   const { toast } = useToast();
   const api = createApiClient(createClient());
@@ -22,7 +23,9 @@ export function AuthForm() {
   const [loading, setLoading] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
 
+
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
@@ -42,16 +45,17 @@ export function AuthForm() {
         });
       }
     }
-    
     setAuthenticated(true);
     setLoading(false);
   };
 
+
   useEffect(() => {
-    if(authenticated) {
+    if (authenticated) {
       router.refresh();
     }
   }, [authenticated, router]);
+
 
   // add toast if error
   useEffect(() => {
@@ -71,6 +75,7 @@ export function AuthForm() {
       );
     }
   }, []);
+
 
   return (
     <Card className="mx-auto w-96 mx-4">
