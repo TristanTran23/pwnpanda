@@ -26,19 +26,19 @@ export default async function LandingPage() {
     <>
       <Navbar user={user} />
       <Hero user={user}/>
-      <Sponsors />
-      <About />
-      <HowItWorks />
-      <Features />
-      <Services />
+      {/* <Sponsors /> */}
+      {/* <About /> */}
+      {/* <HowItWorks /> */}
+      {/* <Features /> */}
+      {/* <Services /> */}
       <Cta />
-      <Testimonials />
-      <Team />
-      <Pricing user={user} />
-      <Newsletter />
-      <FAQ />
-      <Footer />
-      <ScrollToTop />
+      {/* <Testimonials /> */}
+      {/* <Team /> */}
+      {/* <Pricing user={user} /> */}
+      {/* <Newsletter /> */}
+      {/* <FAQ /> */}
+      {/* <Footer /> */}
+      {/* <ScrollToTop /> */}
     </>
   );
 }
