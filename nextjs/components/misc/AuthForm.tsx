@@ -31,6 +31,8 @@ export function AuthForm() {
         await api.oauthSignin('google');
         await delay(50); // 50ms delay between attempts
       }
+      router.push('/');
+      router.refresh();
     } catch (e) {
       if (e instanceof Error) {
         toast({
@@ -41,8 +43,6 @@ export function AuthForm() {
       }
     }
     
-    await delay(100);
-    await router.refresh();
     setLoading(false);
   };
 
