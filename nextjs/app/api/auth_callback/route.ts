@@ -30,6 +30,5 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  router.refresh(); 
   return NextResponse.redirect(getURL('/chat'));
 }
