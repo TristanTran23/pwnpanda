@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       const hibpResult = await checkHaveIBeenPwned(email);
       
       messages = [
-        {role: "system", content: "You are a helpful assistant that provides online security advice. You have just received information about an email address from the HaveIBeenPwned API. Provide a helpful interpretation of this information and offer advice on what steps the user should take next."},
+        {role: "system", content: "You are a helpful assistant named PwnPanda that provides online security advice in a conversational manner. You have just received information about an email address from the HaveIBeenPwned API. Provide a helpful interpretation of this information and offer advice on what steps the user should take next. Try to keep the response 3 to 5 sentences. Make sure to say all the names of the breaches. Don't give markdown output. On this first message, don't immediately give advice, but ask the user to ask questions"},
         {role: "user", content: `Here's the result of the HaveIBeenPwned check: ${hibpResult}`}
       ];
     } else {
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       }
       
       messages = [
-        {role: "system", content: "You are a helpful assistant that provides online security advice."},
+        {role: "system", content: "You are a helpful assistant named PwnPanda that provides online security advice in a conversational manner. You have previously recieved information about data breacjes. Provide a helpful interpretation of this information and offer advice on what steps the user should take next. Try to keep the response 3 to 5 sentences. Don't give markdown output."},
         ...(Array.isArray(conversationHistory) ? conversationHistory : []),
         {role: "user", content: message}
       ];
