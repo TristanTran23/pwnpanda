@@ -20,7 +20,7 @@ import { ModeToggle } from './mode-toggle';
 import { LogoIcon } from './Icons';
 import { User } from '@supabase/supabase-js';
 import { createApiClient } from '@/utils/supabase/api';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
 import Image from 'next/image'

@@ -1,6 +1,5 @@
 'use client';
 
-
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -12,10 +11,9 @@ import {
 import { useEffect, useState } from 'react';
 import { SiGoogle } from '@icons-pack/react-simple-icons';
 import { createApiClient } from '@/utils/supabase/api';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/utils/supabase/client';
 import { useToast } from '../ui/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
-
 
 export function AuthForm() {
   const { toast } = useToast();
