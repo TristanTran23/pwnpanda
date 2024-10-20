@@ -43,6 +43,7 @@ export function AuthForm() {
       }
     }
     
+    setAuthenticated(true);
     setLoading(false);
   };
 
