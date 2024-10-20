@@ -13,10 +13,12 @@ import { Services } from '@/components/landing/Services';
 import { Sponsors } from '@/components/landing/Sponsors';
 import { Team } from '@/components/landing/Team';
 import { Testimonials } from '@/components/landing/Testimonials';
-import { createClient } from '@/utils/supabase/server';4
+import { createClient } from '@/utils/supabase/server';import { useState } from 'react';
+4
 
 export default async function LandingPage() {
   const supabase = createClient();
+  const [supabaseUser, setSupabaseUser] = useState();
 
   const {
     data: { user }

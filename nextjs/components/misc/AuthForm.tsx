@@ -47,6 +47,7 @@ export function AuthForm() {
     }
     setAuthenticated(true);
     setLoading(false);
+    router.push("/chat");
   };
 
 
