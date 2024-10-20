@@ -16,7 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowLeft } from "lucide-react";
 
 interface Message {
-  type: 'user' | 'bot' | 'error';
+  role: 'user' | 'assistant' | 'system';
   content: string;
 }
 
@@ -57,8 +57,7 @@ export default function ChatPage({ user }: { user: User }) {
     try {
       const { data, error } = await getConversations(supabase, user.id);
       if (error) throw error;
-      console.log("*********************RAW DOG****************************");
-      console.log(data);
+      console.log("Fetched conversations:", data);
 
       const parsedConversations: Conversation[] = (data as Convo[])
         .filter((conv): conv is Convo & { id: string } => !!conv.id)
@@ -68,8 +67,7 @@ export default function ChatPage({ user }: { user: User }) {
           messages: parseMessages(conv.content)
         }));
 
-      console.log("********************PARSED CONVERSATIONS*************************");
-      console.log(parsedConversations);
+      console.log("Parsed conversations:", parsedConversations);
       setConversations(parsedConversations);
     } catch (error) {
       console.error('Error fetching conversations:', error);
@@ -77,9 +75,7 @@ export default function ChatPage({ user }: { user: User }) {
   };
 
   const parseMessages = (message: Json | null): Message[] => {
-    console.log("parsing messages");
     if (!message) return [];
-    console.log("Message: ", message);
     try {
       const parsedMessage = JSON.parse(message as string);
       return Array.isArray(parsedMessage) ? parsedMessage : [];
@@ -106,7 +102,9 @@ export default function ChatPage({ user }: { user: User }) {
         throw new Error('Failed to get response');
       }
       const data = await response.json();
-      const newMessages: Message[] = [{ type: 'bot', content: data.reply }];
+      const newMessages: Message[] = [
+        { role: 'assistant', content: data.reply }
+      ];
       const newConversation: Omit<Convo, 'id'> = {
         userId: user.id,
         content: JSON.stringify(newMessages),
@@ -127,7 +125,7 @@ export default function ChatPage({ user }: { user: User }) {
       setCurrentConversation({
         id: 'error',
         title: 'Error',
-        messages: [{ type: 'error', content: 'Failed to check email security.' }],
+        messages: [{ role: 'system', content: 'Failed to check email security.' }],
       });
       setNewMessageReceived(true);
     } finally {
@@ -140,7 +138,7 @@ export default function ChatPage({ user }: { user: User }) {
     e.preventDefault();
     if (!input.trim() || !currentConversation) return;
     setIsLoading(true);
-    const updatedMessages: Message[] = [...currentConversation.messages, { type: 'user', content: input }];
+    const updatedMessages: Message[] = [...currentConversation.messages, { role: 'user', content: input }];
     setCurrentConversation(prev => prev ? {...prev, messages: updatedMessages} : null);
     setNewMessageReceived(true);
     try {
@@ -149,19 +147,23 @@ export default function ChatPage({ user }: { user: User }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: input, isFirstMessage: false }),
+        body: JSON.stringify({ 
+          message: input, 
+          isFirstMessage: false,
+          conversationHistory: updatedMessages.filter(msg => msg.role !== 'system')
+        }),
       });
       if (!response.ok) {
         throw new Error('Failed to get response');
       }
       const data = await response.json();
-      updatedMessages.push({ type: 'bot', content: data.reply });
+      updatedMessages.push({ role: 'assistant', content: data.reply });
       setCurrentConversation(prev => prev ? {...prev, messages: updatedMessages} : null);
       await updateConversation(supabase, currentConversation.id, JSON.stringify(updatedMessages));
       setNewMessageReceived(true);
     } catch (error) {
       console.error('Error:', error);
-      updatedMessages.push({ type: 'error', content: 'Failed to get response.' });
+      updatedMessages.push({ role: 'system', content: 'Failed to get response.' });
       setCurrentConversation(prev => prev ? {...prev, messages: updatedMessages} : null);
       setNewMessageReceived(true);
     } finally {
@@ -186,13 +188,13 @@ export default function ChatPage({ user }: { user: User }) {
       <div className="flex-grow overflow-hidden relative">
         {!showConversations && (
           <Button
-          onClick={handleNewCheck}
-          variant="outline"
-          size="sm"
-          className="absolute top-2 left-2 z-10"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back
-        </Button>
+            onClick={handleNewCheck}
+            variant="outline"
+            size="sm"
+            className="absolute top-2 left-2 z-10"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back
+          </Button>
         )}
         <div className="max-w-4xl mx-auto h-full overflow-y-auto pb-20 px-2 sm:px-4">
           {showConversations ? (
@@ -241,10 +243,10 @@ export default function ChatPage({ user }: { user: User }) {
                 <CardContent className="flex-grow overflow-y-auto p-2">
                   <ScrollArea className="h-[calc(100vh-160px)] w-full pr-2">
                     {currentConversation.messages.map((message, index) => (
-                      <div key={index} className={`mb-2 ${message.type === 'user' ? 'text-right' : 'text-left'}`}>
+                      <div key={index} className={`mb-2 ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
                         <div className={`inline-block p-2 rounded-lg max-w-[85%] break-words text-sm ${
-                          message.type === 'user' ? 'bg-blue-500 text-white' : 
-                          message.type === 'bot' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                          message.role === 'user' ? 'bg-blue-500 text-white' : 
+                          message.role === 'assistant' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
                         }`}>
                           {message.content}
                         </div>

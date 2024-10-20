@@ -16,7 +16,6 @@ async function checkHaveIBeenPwned(email: string) {
       'user-agent': 'YourAppName'
     }
   });
-
   if (response.status === 404) {
     return "Good news! This email hasn't been found in any known data breaches.";
   } else if (response.ok) {
@@ -30,7 +29,9 @@ async function checkHaveIBeenPwned(email: string) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { message, email, isFirstMessage } = body;
+    const { message, email, isFirstMessage, conversationHistory } = body;
+
+    let messages = [];
 
     if (isFirstMessage) {
       if (!email) {
@@ -38,35 +39,37 @@ export async function POST(req: NextRequest) {
       }
       const hibpResult = await checkHaveIBeenPwned(email);
       
-      const response = await openai.chat.completions.create({
-        model: "gpt-4",
-        messages: [
-          {role: "system", content: "You are a helpful assistant that provides online security advice. You have just received information about an email address from the HaveIBeenPwned API. Provide a helpful interpretation of this information and offer advice on what steps the user should take next."},
-          {role: "user", content: `Here's the result of the HaveIBeenPwned check: ${hibpResult}`}
-        ],
-        max_tokens: 250,
-      });
-
-      const aiMessage = response.choices[0]?.message?.content;
-      if (!aiMessage) {
-        throw new Error('No response generated from OpenAI');
+      messages = [
+        {role: "system", content: "You are a helpful assistant that provides online security advice. You have just received information about an email address from the HaveIBeenPwned API. Provide a helpful interpretation of this information and offer advice on what steps the user should take next."},
+        {role: "user", content: `Here's the result of the HaveIBeenPwned check: ${hibpResult}`}
+      ];
+    } else {
+      if (!message) {
+        return NextResponse.json({ error: 'No message provided' }, { status: 400 });
       }
-
-      const reply = `${hibpResult}\n\nHere's some advice based on this information:\n${aiMessage.trim()}`;
-      return NextResponse.json({ reply });
+      
+      messages = [
+        {role: "system", content: "You are a helpful assistant that provides online security advice."},
+        ...(Array.isArray(conversationHistory) ? conversationHistory : []),
+        {role: "user", content: message}
+      ];
     }
 
-    if (!message) {
-      return NextResponse.json({ error: 'No message provided' }, { status: 400 });
-    }
+    // Ensure all messages have the required 'role' field
+    messages = messages.map(msg => {
+      if (!msg.role) {
+        console.warn('Message without role detected:', msg);
+        return { ...msg, role: 'user' }; // Default to 'user' if role is missing
+      }
+      return msg;
+    });
+
+    console.log('Messages being sent to OpenAI:', JSON.stringify(messages, null, 2));
 
     const response = await openai.chat.completions.create({
       model: "gpt-4",
-      messages: [
-        {role: "system", content: "You are a helpful assistant that provides online security advice."},
-        {role: "user", content: message}
-      ],
-      max_tokens: 150,
+      messages: messages,
+      max_tokens: 250,
     });
 
     const aiMessage = response.choices[0]?.message?.content;
