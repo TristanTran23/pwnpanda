@@ -1,4 +1,5 @@
-'use client';
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -7,16 +8,15 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import { useEffect, useState } from 'react';
 import { SiGoogle } from '@icons-pack/react-simple-icons';
 import { createApiClient } from '@/utils/supabase/api';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '../ui/use-toast';
-import { useRouter, useSearchParams } from 'next/navigation';
 
 export function AuthForm() {
   const { toast } = useToast();
   const api = createApiClient(createClient());
+  const supabase = createClient();
   const searchParams = useSearchParams();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -26,13 +26,25 @@ export function AuthForm() {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      // Trigger sign-in 20 times with a small delay between attempts
+      // Trigger sign-in multiple times with a small delay between attempts
       for (let i = 0; i < 8; i++) {
         await api.oauthSignin('google');
         await delay(50); // 50ms delay between attempts
       }
-      router.push('/');
-      router.refresh();
+
+      // After sign-in attempts, check for session
+      const checkSession = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          // Session is set, redirect or update UI
+          router.push('/chat'); // Replace with your desired route
+        } else {
+          // If session isn't set yet, check again after a short delay
+          setTimeout(checkSession, 500);
+        }
+      };
+
+      checkSession();
     } catch (e) {
       if (e instanceof Error) {
         toast({
@@ -41,12 +53,10 @@ export function AuthForm() {
           variant: 'destructive'
         });
       }
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
-  // add toast if error
   useEffect(() => {
     type ToastVariant = 'destructive' | 'default' | undefined | null;
     const title = searchParams.get('toast_title') || undefined;
@@ -63,7 +73,7 @@ export function AuthForm() {
         100
       );
     }
-  }, []);
+  }, [searchParams, toast]);
 
   return (
     <Card className="mx-auto w-96 mx-4">
