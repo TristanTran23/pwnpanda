@@ -39,7 +39,7 @@ export const Hero = ({ user }: { user: User | null }) => {
             </h1>{' '}
             <br />
             <h2 className="inline">
-              Security Agent Test
+              Security Agent
             </h2>
           </main>
           <p className="text-xl text-muted-foreground md:w-10/12 mx-auto lg:mx-0">
