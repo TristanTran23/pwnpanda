@@ -1,5 +1,3 @@
-'use client';
-
 import { About } from '@/components/landing/About';
 import { Cta } from '@/components/landing/Cta';
 import { FAQ } from '@/components/landing/FAQ';
@@ -15,29 +13,19 @@ import { Services } from '@/components/landing/Services';
 import { Sponsors } from '@/components/landing/Sponsors';
 import { Team } from '@/components/landing/Team';
 import { Testimonials } from '@/components/landing/Testimonials';
-import { createClient } from '@/utils/supabase/client';
-import { User } from '@supabase/supabase-js';
-import { use, useEffect, useState } from 'react';
-4
+import { createClient } from '@/utils/supabase/server';4
 
 export default async function LandingPage() {
   const supabase = createClient();
-  const [supabaseUser, setSupabaseUser] = useState<User | null>();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setSupabaseUser(user);
-      console.log(user);
-    };
-
-    fetchUser();
-  }, []);
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
 
   return (
     <>
-      <Navbar user={supabaseUser as any} />
-      <Hero user={supabaseUser as any}/>
+      <Navbar user={user} />
+      <Hero user={user}/>
       {/* <Sponsors /> */}
       {/* <About /> */}
       {/* <HowItWorks /> */}
