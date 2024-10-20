@@ -12,11 +12,11 @@ const PostHogPageView = dynamic(() => import('./PostHogPageView'), {
 });
 
 const meta = {
-  title: 'Next.js Subscription Starter',
+  title: 'PwnPanda',
   description: 'Brought to you by Vercel, Stripe, and Supabase.',
   cardImage: '/og.png',
   robots: 'follow, index',
-  favicon: '/favicon.ico',
+  favicon: '/logo.png',
   url: getURL()
 };
 
