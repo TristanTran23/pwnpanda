@@ -53,7 +53,7 @@ export const Hero = ({ user }: { user: User | null }) => {
             <Button className="w-full md:w-1/3 bg-[#1EA92F] hover:bg-[#2c9639]" onClick={handleClick}>
               Login 
             </Button>
-            <Button className="w-full md:w-1/3" onClick={handleClick}>
+            <Button className="w-full md:w-1/3" onClick={handleChatClick}>
               Chat
             </Button>
             {/* <Link
