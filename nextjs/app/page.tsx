@@ -18,7 +18,6 @@ import { createClient } from '@/utils/supabase/server';import { useState } from 
 
 export default async function LandingPage() {
   const supabase = createClient();
-  const [supabaseUser, setSupabaseUser] = useState();
 
   const {
     data: { user }
