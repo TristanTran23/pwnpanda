@@ -44,6 +44,7 @@ export default function AccountPage({
       return toast({
         title: 'Error Occured',
         description: error.message,
+        
         variant: 'destructive'
       });
     }
