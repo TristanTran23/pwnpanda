@@ -20,6 +20,10 @@ export const Hero = ({ user }: { user: User | null }) => {
     }
   }
 
+  const handleChatClick = () => {
+    router.push('/chat')
+  }
+
   return (
     <div className="h-[50rem] w-full dark:bg-black bg-white  dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative flex items-center justify-center">
       <section className="container grid lg:grid-cols-2 place-items-center py-10 gap-10">
@@ -47,9 +51,12 @@ export const Hero = ({ user }: { user: User | null }) => {
           </p>
           <div className="space-y-4 md:space-y-0 md:space-x-4">
             <Button className="w-full md:w-1/3 bg-[#1EA92F] hover:bg-[#2c9639]" onClick={handleClick}>
-              {user ? 'Chat With PwnPanda' : 'Get Started'}
+              Get Started
             </Button>
-            <Link
+            <Button className="w-full md:w-1/3 bg-[#1EA92F] hover:bg-[#2c9639]" onClick={handleClick}>
+              Chat
+            </Button>
+            {/* <Link
               href="https://github.com/TristanTran23/pwnpanda"
               target="_blank"
               rel="noreferrer noopener"
@@ -58,7 +65,7 @@ export const Hero = ({ user }: { user: User | null }) => {
               })}`}
             >
               Github Repository
-            </Link>
+            </Link> */}
           </div>
         </div>
 
