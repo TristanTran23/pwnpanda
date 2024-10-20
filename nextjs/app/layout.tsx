@@ -14,7 +14,7 @@ const PostHogPageView = dynamic(() => import('./PostHogPageView'), {
 const meta = {
   title: 'PwnPanda',
   description: 'Your Personal security assistant',
-  // cardImage: '/og.png',
+  cardImage: '/full-body-light.png',
   robots: 'follow, index',
   favicon: '/logo.png',
   url: getURL()
@@ -36,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
       url: meta.url,
       title: meta.title,
       description: meta.description,
-      // images: [meta.cardImage],
+      images: [meta.cardImage],
       type: 'website',
       siteName: meta.title
     },
@@ -46,7 +46,7 @@ export async function generateMetadata(): Promise<Metadata> {
       creator: '@Vercel',
       title: meta.title,
       description: meta.description,
-      // images: [meta.cardImage]
+      images: [meta.cardImage]
     }
   };
 }
