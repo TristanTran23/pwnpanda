@@ -125,7 +125,7 @@ export default function ChatPage({ user }: { user: User }) {
       setCurrentConversation({
         id: 'error',
         title: 'Error',
-        messages: [{ role: 'system', content: 'Failed to check email security.' }],
+        content: [{ role: 'system', content: 'Failed to check email security.' }],
       });
       setNewMessageReceived(true);
     } finally {
@@ -138,7 +138,7 @@ export default function ChatPage({ user }: { user: User }) {
     e.preventDefault();
     if (!input.trim() || !currentConversation) return;
     setIsLoading(true);
-    const updatedMessages: Message[] = [...currentConversation.messages, { role: 'user', content: input }];
+    const updatedMessages: Message[] = [...currentConversation.content, { role: 'user', content: input }];
     setCurrentConversation(prev => prev ? {...prev, messages: updatedMessages} : null);
     setNewMessageReceived(true);
     try {
@@ -242,7 +242,7 @@ export default function ChatPage({ user }: { user: User }) {
               {currentConversation && (
                 <CardContent className="flex-grow overflow-y-auto p-2">
                   <ScrollArea className="h-[calc(100vh-160px)] w-full pr-2">
-                    {currentConversation.messages.map((message, index) => (
+                    {currentConversation.content.map((message, index) => (
                       <div key={index} className={`mb-2 ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
                         <div className={`inline-block p-2 rounded-lg max-w-[85%] break-words text-sm ${
                           message.role === 'user' ? 'bg-blue-500 text-white' : 
