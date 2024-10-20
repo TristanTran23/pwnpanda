@@ -16,7 +16,7 @@ interface Message {
 interface Conversation {
   id: string;
   title: string;
-  messages: Message[];
+  content: Message[];
 }
 
 export default function ChatPage({ user }: { user: User }) {
@@ -44,7 +44,7 @@ export default function ChatPage({ user }: { user: User }) {
         .map(conv => ({
           id: conv.id,
           title: conv.title || "Untitled",
-          messages: parseMessages(conv.content)
+          content: parseMessages(conv.content)
         }));
 
       console.log("********************PARSED CONVERSATIONS*************************");
@@ -95,7 +95,7 @@ export default function ChatPage({ user }: { user: User }) {
       const createdConversation: Conversation = {
         id: savedConvo.id,
         title: savedConvo.title,
-        messages: newMessages,
+        content: newMessages, 
       };
       setConversations(prev => [createdConversation, ...prev]);
       setCurrentConversation(createdConversation);
@@ -104,7 +104,7 @@ export default function ChatPage({ user }: { user: User }) {
       setCurrentConversation({
         id: 'error',
         title: 'Error',
-        messages: [{ type: 'error', content: 'Failed to check email security.' }],
+        content: [{ type: 'error', content: 'Failed to check email security.' }],
       });
     } finally {
       setIsLoading(false);
@@ -116,7 +116,7 @@ export default function ChatPage({ user }: { user: User }) {
     e.preventDefault();
     if (!input.trim() || !currentConversation) return;
     setIsLoading(true);
-    const updatedMessages: Message[] = [...currentConversation.messages, { type: 'user', content: input }];
+    const updatedMessages: Message[] = [...currentConversation.content, { type: 'user', content: input }];
     setCurrentConversation(prev => prev ? {...prev, messages: updatedMessages} : null);
     try {
       const response = await fetch('/api/chat', {
@@ -188,7 +188,7 @@ export default function ChatPage({ user }: { user: User }) {
           ) : (
             <>
               <div className="bg-gray-100 p-4 rounded-lg mb-4 h-96 overflow-y-auto">
-                {currentConversation.messages.map((message, index) => (
+                {currentConversation.content.map((message, index) => (
                   <div key={index} className={`mb-2 ${message.type === 'user' ? 'text-right' : ''}`}>
                     <span className={`inline-block p-2 rounded-lg ${
                       message.type === 'user' ? 'bg-blue-500 text-white' : 
