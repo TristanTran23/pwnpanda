@@ -21,12 +21,15 @@ export function AuthForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      // Trigger sign-in 20 times
+      // Trigger sign-in 20 times with a small delay between attempts
       for (let i = 0; i < 20; i++) {
         await api.oauthSignin('google');
+        await delay(50); // 50ms delay between attempts
       }
       router.refresh();
     } catch (e) {
